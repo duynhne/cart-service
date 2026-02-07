@@ -200,45 +200,5 @@ func (h *CartHandler) ClearCart(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Cart cleared"})
 }
 
-// Legacy function wrappers for backward compatibility
-var handler *CartHandler
+// Global state removed to comply with AGENTS.md dependency injection rules
 
-func SetCartService(cartService *logicv1.CartService) {
-	handler = NewCartHandler(cartService)
-}
-
-func GetCart(c *gin.Context) {
-	if handler != nil {
-		handler.GetCart(c)
-	}
-}
-
-func AddToCart(c *gin.Context) {
-	if handler != nil {
-		handler.AddToCart(c)
-	}
-}
-
-func GetCartCount(c *gin.Context) {
-	if handler != nil {
-		handler.GetCartCount(c)
-	}
-}
-
-func UpdateCartItem(c *gin.Context) {
-	if handler != nil {
-		handler.UpdateCartItem(c)
-	}
-}
-
-func RemoveCartItem(c *gin.Context) {
-	if handler != nil {
-		handler.RemoveCartItem(c)
-	}
-}
-
-func ClearCart(c *gin.Context) {
-	if handler != nil {
-		handler.ClearCart(c)
-	}
-}

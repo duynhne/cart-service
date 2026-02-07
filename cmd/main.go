@@ -13,13 +13,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"github.com/duynhne/pkg/logger/clog"
 	"github.com/duynhne/cart-service/config"
 	database "github.com/duynhne/cart-service/internal/core"
 	"github.com/duynhne/cart-service/internal/core/repository"
 	logicv1 "github.com/duynhne/cart-service/internal/logic/v1"
 	v1 "github.com/duynhne/cart-service/internal/web/v1"
 	"github.com/duynhne/cart-service/middleware"
+	"github.com/duynhne/pkg/logger/clog"
 )
 
 func main() {
@@ -51,13 +51,13 @@ func main() {
 
 	cartRepo := repository.NewPostgresCartRepository(pool)
 	cartService := logicv1.NewCartService(cartRepo)
-	v1.SetCartService(cartService)
+	cartHandler := v1.NewCartHandler(cartService)
 
 	authClient := middleware.NewAuthClient(cfg.AuthServiceURL)
 	slog.Info("Auth client initialized", "auth_service_url", cfg.AuthServiceURL)
 
 	var isShuttingDown atomic.Bool
-	srv := setupServer(cfg, authClient, &isShuttingDown)
+	srv := setupServer(cfg, authClient, cartHandler, &isShuttingDown)
 	runGracefulShutdown(cfg, srv, tp, pool, &isShuttingDown)
 }
 
@@ -90,7 +90,7 @@ func initProfiling(cfg *config.Config) {
 	slog.Info("Profiling initialized", "endpoint", cfg.Profiling.Endpoint)
 }
 
-func setupServer(cfg *config.Config, authClient *middleware.AuthClient, isShuttingDown *atomic.Bool) *http.Server {
+func setupServer(cfg *config.Config, authClient *middleware.AuthClient, cartHandler *v1.CartHandler, isShuttingDown *atomic.Bool) *http.Server {
 	r := gin.Default()
 
 	r.Use(middleware.TracingMiddleware())
@@ -112,12 +112,12 @@ func setupServer(cfg *config.Config, authClient *middleware.AuthClient, isShutti
 	apiV1 := r.Group("/api/v1")
 	apiV1.Use(middleware.AuthMiddleware(authClient))
 	{
-		apiV1.GET("/cart", v1.GetCart)
-		apiV1.POST("/cart", v1.AddToCart)
-		apiV1.DELETE("/cart", v1.ClearCart)
-		apiV1.GET("/cart/count", v1.GetCartCount)
-		apiV1.PATCH("/cart/items/:itemId", v1.UpdateCartItem)
-		apiV1.DELETE("/cart/items/:itemId", v1.RemoveCartItem)
+		apiV1.GET("/cart", cartHandler.GetCart)
+		apiV1.POST("/cart", cartHandler.AddToCart)
+		apiV1.DELETE("/cart", cartHandler.ClearCart)
+		apiV1.GET("/cart/count", cartHandler.GetCartCount)
+		apiV1.PATCH("/cart/items/:itemId", cartHandler.UpdateCartItem)
+		apiV1.DELETE("/cart/items/:itemId", cartHandler.RemoveCartItem)
 	}
 
 	return &http.Server{
