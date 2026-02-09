@@ -77,7 +77,7 @@ func (r *PostgresCartRepository) GetItemCount(ctx context.Context, userID string
 // AddItem adds an item to the cart using a single atomic UPSERT.
 // Uses INSERT ... ON CONFLICT to ensure PgCat always routes this to the primary,
 // avoiding SQLSTATE 25006 (read-only transaction) errors from replica routing.
-func (r *PostgresCartRepository) AddItem(ctx context.Context, userID string, item domain.CartItem) error {
+func (r *PostgresCartRepository) AddItem(ctx context.Context, userID string, item *domain.CartItem) error {
 	// Start an explicit transaction to ensure PgCat routes to Primary
 	tx, err := r.pool.Begin(ctx)
 	if err != nil {

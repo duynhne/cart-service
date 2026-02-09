@@ -81,7 +81,7 @@ func (s *CartService) AddToCart(ctx context.Context, userID string, req domain.A
 	}
 
 	// Call repository
-	err := s.cartRepo.AddItem(ctx, userID, item)
+	err := s.cartRepo.AddItem(ctx, userID, &item)
 	if err != nil {
 		span.RecordError(err)
 		return nil, err
