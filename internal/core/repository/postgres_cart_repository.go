@@ -2,10 +2,8 @@ package repository
 
 import (
 	"context"
-	"errors"
 
 	"github.com/duynhne/cart-service/internal/core/domain"
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -76,33 +74,19 @@ func (r *PostgresCartRepository) GetItemCount(ctx context.Context, userID string
 	return count, nil
 }
 
-// AddItem adds an item to the cart
+// AddItem adds an item to the cart using a single atomic UPSERT.
+// Uses INSERT ... ON CONFLICT to ensure PgCat always routes this to the primary,
+// avoiding SQLSTATE 25006 (read-only transaction) errors from replica routing.
 func (r *PostgresCartRepository) AddItem(ctx context.Context, userID string, item domain.CartItem) error {
-	// Check if item already exists
-	checkQuery := `SELECT id FROM cart_items WHERE user_id = $1 AND product_id = $2`
-	var existingID string
-	err := r.pool.QueryRow(ctx, checkQuery, userID, item.ProductID).Scan(&existingID)
-
-	if errors.Is(err, pgx.ErrNoRows) {
-		// Insert new item with denormalized product details
-		insertQuery := `
-			INSERT INTO cart_items (user_id, product_id, product_name, product_price, quantity, created_at, updated_at)
-			VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
-			RETURNING id
-		`
-		return r.pool.QueryRow(ctx, insertQuery, userID, item.ProductID, item.ProductName, item.ProductPrice, item.Quantity).Scan(&item.ID)
-	} else if err != nil {
-		return err
-	}
-
-	// Update existing item quantity
-	updateQuery := `
-		UPDATE cart_items
-		SET quantity = quantity + $1, updated_at = NOW()
-		WHERE id = $2
+	query := `
+		INSERT INTO cart_items (user_id, product_id, product_name, product_price, quantity, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+		ON CONFLICT (user_id, product_id) DO UPDATE
+		SET quantity = cart_items.quantity + EXCLUDED.quantity,
+		    updated_at = NOW()
+		RETURNING id
 	`
-	_, err = r.pool.Exec(ctx, updateQuery, item.Quantity, existingID)
-	return err
+	return r.pool.QueryRow(ctx, query, userID, item.ProductID, item.ProductName, item.ProductPrice, item.Quantity).Scan(&item.ID)
 }
 
 // UpdateItem updates the quantity of a cart item
