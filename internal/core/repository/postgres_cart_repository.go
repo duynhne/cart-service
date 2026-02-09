@@ -83,7 +83,9 @@ func (r *PostgresCartRepository) AddItem(ctx context.Context, userID string, ite
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback(ctx)
+	defer func() {
+		_ = tx.Rollback(ctx)
+	}()
 
 	query := `
 		INSERT INTO cart_items (user_id, product_id, product_name, product_price, quantity, created_at, updated_at)
