@@ -34,7 +34,7 @@ func (m *MockCartRepository) GetItemCount(ctx context.Context, userID string) (i
 	return args.Int(0), args.Error(1)
 }
 
-func (m *MockCartRepository) AddItem(ctx context.Context, userID string, item domain.CartItem) error {
+func (m *MockCartRepository) AddItem(ctx context.Context, userID string, item *domain.CartItem) error {
 	args := m.Called(ctx, userID, item)
 	return args.Error(0)
 }
@@ -114,7 +114,7 @@ func TestAddToCart(t *testing.T) {
 
 		// Expect AddItem to be called with correct arguments
 		// Note: The service reconstructs the CartItem from the request, so we match on fields
-		mockRepo.On("AddItem", mock.Anything, "1", mock.MatchedBy(func(item domain.CartItem) bool {
+		mockRepo.On("AddItem", mock.Anything, "1", mock.MatchedBy(func(item *domain.CartItem) bool {
 			return item.ProductID == req.ProductID && item.Quantity == req.Quantity
 		})).Return(nil)
 

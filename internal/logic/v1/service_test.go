@@ -9,7 +9,7 @@ import (
 
 // MockCartRepository
 type MockCartRepository struct {
-	addItemFunc func(ctx context.Context, userID string, item domain.CartItem) error
+	addItemFunc func(ctx context.Context, userID string, item *domain.CartItem) error
 	clearFunc   func(ctx context.Context, userID string) error
 }
 
@@ -19,7 +19,7 @@ func (m *MockCartRepository) FindByUserID(ctx context.Context, userID string) (*
 func (m *MockCartRepository) GetItemCount(ctx context.Context, userID string) (int, error) {
 	return 0, nil
 }
-func (m *MockCartRepository) AddItem(ctx context.Context, userID string, item domain.CartItem) error {
+func (m *MockCartRepository) AddItem(ctx context.Context, userID string, item *domain.CartItem) error {
 	if m.addItemFunc != nil {
 		return m.addItemFunc(ctx, userID, item)
 	}
