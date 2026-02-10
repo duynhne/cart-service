@@ -51,6 +51,17 @@ jobs:
     with:
       image-name: 'cart'
       push: true
+      cosign: true
+      trivy: true
+      trivy-severity: 'CRITICAL,HIGH'
+      trivy-exit-code: '1'
+      trivy-ignore-unfixed: true
+    permissions:
+      contents: read
+      packages: write
+      actions: read
+      id-token: write
+      security-events: write
     secrets: inherit
 
 
