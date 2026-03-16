@@ -1,6 +1,6 @@
 module github.com/duynhne/cart-service
 
-go 1.25.7
+go 1.25.8
 
 require (
 	github.com/duynhne/pkg v0.1.0
