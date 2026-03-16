@@ -3,7 +3,7 @@ module github.com/duynhne/cart-service
 go 1.25.8
 
 require (
-	github.com/duynhne/pkg v0.1.0
+	github.com/duynhne/pkg v0.1.1
 	github.com/gin-gonic/gin v1.11.0
 	github.com/grafana/pyroscope-go v1.2.7
 	github.com/jackc/pgx/v5 v5.8.0
