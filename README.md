@@ -11,16 +11,16 @@ Shopping cart microservice for managing user carts and items.
 
 ## API Endpoints
 
-> **Browser callers** hit `https://gateway.duynhne.me/cart/v1/private/cart/…` (all routes private — JWT required); Kong rewrites to the cluster paths below. See [homelab naming convention](https://github.com/duynhlab/homelab/blob/main/docs/api/api-naming-convention.md).
+All routes follow Variant A naming and require JWT (audience = `private`). See [homelab naming convention](https://github.com/duynhlab/homelab/blob/main/docs/api/api-naming-convention.md).
 
-| Method | Cluster path | Edge path (via gateway) |
-|--------|--------------|-------------------------|
-| `GET` | `/api/v1/cart` | `/cart/v1/private/cart` |
-| `POST` | `/api/v1/cart` | `/cart/v1/private/cart` |
-| `DELETE` | `/api/v1/cart` | `/cart/v1/private/cart` |
-| `GET` | `/api/v1/cart/count` | `/cart/v1/private/cart/count` |
-| `PATCH` | `/api/v1/cart/items/:id` | `/cart/v1/private/cart/items/:id` |
-| `DELETE` | `/api/v1/cart/items/:id` | `/cart/v1/private/cart/items/:id` |
+| Method | Path |
+|--------|------|
+| `GET` | `/cart/v1/private/cart` |
+| `POST` | `/cart/v1/private/cart` |
+| `DELETE` | `/cart/v1/private/cart` |
+| `GET` | `/cart/v1/private/cart/count` |
+| `PATCH` | `/cart/v1/private/cart/items/:id` |
+| `DELETE` | `/cart/v1/private/cart/items/:id` |
 
 ## Tech Stack
 
