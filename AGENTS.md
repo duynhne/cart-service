@@ -142,11 +142,27 @@ go build ./... && go test ./... && golangci-lint run --timeout=10m
 
 ## 🔌 API Reference
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/api/v1/cart` | Get user cart |
-| `POST` | `/api/v1/cart` | Add item to cart |
-| `DELETE` | `/api/v1/cart` | Clear cart |
-| `GET` | `/api/v1/cart/count` | Get cart item count |
-| `PATCH` | `/api/v1/cart/items/:itemId` | Update item quantity |
-| `DELETE` | `/api/v1/cart/items/:itemId` | Remove item |
+### Cluster paths (what this service mounts)
+
+All cart routes are **private** — the service applies JWT middleware at the `/api/v1` group level.
+
+| Method | Cluster path | Audience | Description |
+|--------|--------------|----------|-------------|
+| `GET` | `/api/v1/cart` | private | Get user cart |
+| `POST` | `/api/v1/cart` | private | Add item to cart |
+| `DELETE` | `/api/v1/cart` | private | Clear cart |
+| `GET` | `/api/v1/cart/count` | private | Get cart item count (badge) |
+| `PATCH` | `/api/v1/cart/items/:itemId` | private | Update item quantity |
+| `DELETE` | `/api/v1/cart/items/:itemId` | private | Remove item |
+
+### Edge paths (what the browser sends)
+
+Kong in the `cart` namespace rewrites `/cart/v1/private/cart/...` → `/api/v1/cart/...`. No public or internal routes here.
+
+| Edge path (browser) | → Cluster path |
+|---------------------|----------------|
+| `GET \| POST \| DELETE gateway.duynhne.me/cart/v1/private/cart` | `/api/v1/cart` |
+| `GET gateway.duynhne.me/cart/v1/private/cart/count` | `/api/v1/cart/count` |
+| `PATCH \| DELETE gateway.duynhne.me/cart/v1/private/cart/items/:itemId` | `/api/v1/cart/items/:itemId` |
+
+Convention + rewrite rule: [`homelab/docs/api/api-naming-convention.md`](https://github.com/duynhlab/homelab/blob/main/docs/api/api-naming-convention.md).

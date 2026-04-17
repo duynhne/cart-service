@@ -11,14 +11,16 @@ Shopping cart microservice for managing user carts and items.
 
 ## API Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/api/v1/cart` | Get user cart |
-| `POST` | `/api/v1/cart` | Add item |
-| `DELETE` | `/api/v1/cart` | Clear cart |
-| `GET` | `/api/v1/cart/count` | Get item count |
-| `PATCH` | `/api/v1/cart/items/:id` | Update quantity |
-| `DELETE` | `/api/v1/cart/items/:id` | Remove item |
+> **Browser callers** hit `https://gateway.duynhne.me/cart/v1/private/cart/…` (all routes private — JWT required); Kong rewrites to the cluster paths below. See [homelab naming convention](https://github.com/duynhlab/homelab/blob/main/docs/api/api-naming-convention.md).
+
+| Method | Cluster path | Edge path (via gateway) |
+|--------|--------------|-------------------------|
+| `GET` | `/api/v1/cart` | `/cart/v1/private/cart` |
+| `POST` | `/api/v1/cart` | `/cart/v1/private/cart` |
+| `DELETE` | `/api/v1/cart` | `/cart/v1/private/cart` |
+| `GET` | `/api/v1/cart/count` | `/cart/v1/private/cart/count` |
+| `PATCH` | `/api/v1/cart/items/:id` | `/cart/v1/private/cart/items/:id` |
+| `DELETE` | `/api/v1/cart/items/:id` | `/cart/v1/private/cart/items/:id` |
 
 ## Tech Stack
 
