@@ -11,14 +11,16 @@ Shopping cart microservice for managing user carts and items.
 
 ## API Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/api/v1/cart` | Get user cart |
-| `POST` | `/api/v1/cart` | Add item |
-| `DELETE` | `/api/v1/cart` | Clear cart |
-| `GET` | `/api/v1/cart/count` | Get item count |
-| `PATCH` | `/api/v1/cart/items/:id` | Update quantity |
-| `DELETE` | `/api/v1/cart/items/:id` | Remove item |
+All routes follow Variant A naming and require JWT (audience = `private`). See [homelab naming convention](https://github.com/duynhlab/homelab/blob/main/docs/api/api-naming-convention.md).
+
+| Method | Path |
+|--------|------|
+| `GET` | `/cart/v1/private/cart` |
+| `POST` | `/cart/v1/private/cart` |
+| `DELETE` | `/cart/v1/private/cart` |
+| `GET` | `/cart/v1/private/cart/count` |
+| `PATCH` | `/cart/v1/private/cart/items/:id` |
+| `DELETE` | `/cart/v1/private/cart/items/:id` |
 
 ## Tech Stack
 

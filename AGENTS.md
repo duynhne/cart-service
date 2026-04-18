@@ -142,11 +142,15 @@ go build ./... && go test ./... && golangci-lint run --timeout=10m
 
 ## 🔌 API Reference
 
+All cart routes are **private** — JWT middleware is applied at the `/cart/v1/private` router group.
+
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET` | `/api/v1/cart` | Get user cart |
-| `POST` | `/api/v1/cart` | Add item to cart |
-| `DELETE` | `/api/v1/cart` | Clear cart |
-| `GET` | `/api/v1/cart/count` | Get cart item count |
-| `PATCH` | `/api/v1/cart/items/:itemId` | Update item quantity |
-| `DELETE` | `/api/v1/cart/items/:itemId` | Remove item |
+| `GET` | `/cart/v1/private/cart` | Get user cart |
+| `POST` | `/cart/v1/private/cart` | Add item to cart |
+| `DELETE` | `/cart/v1/private/cart` | Clear cart (also called by `order-service` after successful checkout with user's forwarded `Authorization`) |
+| `GET` | `/cart/v1/private/cart/count` | Get cart item count (badge) |
+| `PATCH` | `/cart/v1/private/cart/items/:itemId` | Update item quantity |
+| `DELETE` | `/cart/v1/private/cart/items/:itemId` | Remove item |
+
+Full convention + inventory: [`homelab/docs/api/api-naming-convention.md`](https://github.com/duynhlab/homelab/blob/main/docs/api/api-naming-convention.md).
