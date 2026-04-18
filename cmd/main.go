@@ -109,15 +109,16 @@ func setupServer(cfg *config.Config, authClient *middleware.AuthClient, cartHand
 	})
 	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
-	apiV1 := r.Group("/api/v1")
-	apiV1.Use(middleware.AuthMiddleware(authClient))
+	// Cart v1 routes — all private (JWT required). Variant A edge naming.
+	privateCart := r.Group("/cart/v1/private")
+	privateCart.Use(middleware.AuthMiddleware(authClient))
 	{
-		apiV1.GET("/cart", cartHandler.GetCart)
-		apiV1.POST("/cart", cartHandler.AddToCart)
-		apiV1.DELETE("/cart", cartHandler.ClearCart)
-		apiV1.GET("/cart/count", cartHandler.GetCartCount)
-		apiV1.PATCH("/cart/items/:itemId", cartHandler.UpdateCartItem)
-		apiV1.DELETE("/cart/items/:itemId", cartHandler.RemoveCartItem)
+		privateCart.GET("/cart", cartHandler.GetCart)
+		privateCart.POST("/cart", cartHandler.AddToCart)
+		privateCart.DELETE("/cart", cartHandler.ClearCart)
+		privateCart.GET("/cart/count", cartHandler.GetCartCount)
+		privateCart.PATCH("/cart/items/:itemId", cartHandler.UpdateCartItem)
+		privateCart.DELETE("/cart/items/:itemId", cartHandler.RemoveCartItem)
 	}
 
 	return &http.Server{
